@@ -1,0 +1,55 @@
+{
+    "name": "kafkiansky/phpclick",
+    "description": "ClickHouse async php client.",
+    "type": "library",
+    "keywords": [
+        "clickhouse",
+        "amphp",
+        "async"
+    ],
+    "require": {
+        "kafkiansky/binary": "^0.3.0",
+        "amphp/http-client": "^5.1"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.11",
+        "ergebnis/composer-normalize": "^2.43",
+        "phpunit/phpunit": "^10.2",
+        "squizlabs/php_codesniffer": "^2.2",
+        "symfony/var-dumper": "^7.1"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Kafkiansky\\PHPClick\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kafkiansky\\PHPClick\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "kafkiansky",
+            "email": "vadimzanfir@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "scripts": {
+        "phpcbf": "./vendor/bin/phpcbf -p --standard=phpcs.xml src",
+        "phpcs": "./vendor/bin/phpcs --standard=phpcs.xml",
+        "phpstan": "./vendor/bin/phpstan analyse",
+        "phpunit": "./vendor/bin/phpunit --testdox --do-not-cache",
+        "test": [
+            "@phpunit",
+            "@phpstan",
+            "@phpcs"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true
+        }
+    }
+}
