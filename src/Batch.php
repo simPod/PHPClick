@@ -27,50 +27,50 @@ declare(strict_types=1);
 
 namespace Kafkiansky\PHPClick;
 
+use Amp\ByteStream\ReadableBuffer;
+use Amp\ByteStream\ReadableResourceStream;
+use Amp\Http\Client\HttpContent;
+use Amp\Http\Client\StreamedContent;
+use Kafkiansky\Binary\Buffer;
+use Kafkiansky\Binary\Endianness;
+
 /**
  * @api
  */
-final readonly class Query implements ClickHouseQuerier
+final readonly class Batch
 {
-    /**
-     * @param non-empty-string $query
-     */
     private function __construct(
-        private string $query,
+        public HttpContent $content,
     ) {
     }
 
     /**
-     * @param non-empty-string $query
+     * @throws \Kafkiansky\Binary\BinaryException
      */
-    public static function string(string $query): self
+    public static function fromRows(Row ...$rows): self
     {
+        $buffer = Buffer::empty(Endianness::little());
+
+        foreach ($rows as $row) {
+            $row->writeToBuffer($buffer);
+        }
+
         return new self(
-            $query,
+            StreamedContent::fromStream(
+                new ReadableBuffer($buffer->reset()),
+            ),
         );
     }
 
     /**
-     * @param non-empty-string $table
+     * @param resource $stream
      */
-    public static function builder(string $table): QueryBuilder
+    public static function fromStream($stream): self
     {
-        return new QueryBuilder($table);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toSQL(): string
-    {
-        return \rawurlencode("$this->query Format RowBinary");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString(): string
-    {
-        return $this->query;
+        return new self(
+            StreamedContent::fromStream(
+                new ReadableResourceStream($stream),
+            ),
+        );
     }
 }

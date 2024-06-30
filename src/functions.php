@@ -27,50 +27,35 @@ declare(strict_types=1);
 
 namespace Kafkiansky\PHPClick;
 
+use Kafkiansky\Binary;
+
 /**
- * @api
+ * @param resource|string $file
+ *
+ * @throws Exception\StreamNotWriteable
+ * @throws Binary\BinaryException
  */
-final readonly class Query implements ClickHouseQuerier
+function rowsToFile($file, Row ...$rows): void
 {
-    /**
-     * @param non-empty-string $query
-     */
-    private function __construct(
-        private string $query,
-    ) {
-    }
+    if (\count($rows) > 0) {
+        $stream = \is_resource($file) ? $file : \fopen($file, 'a+');
+        if (!\is_resource($stream)) {
+            throw new Exception\StreamNotWriteable(\is_resource($file) ? stream_get_meta_data($file)['uri'] : $file);
+        }
 
-    /**
-     * @param non-empty-string $query
-     */
-    public static function string(string $query): self
-    {
-        return new self(
-            $query,
-        );
-    }
+        try {
+            $buffer = Binary\Buffer::empty(Binary\Endianness::little());
 
-    /**
-     * @param non-empty-string $table
-     */
-    public static function builder(string $table): QueryBuilder
-    {
-        return new QueryBuilder($table);
-    }
+            foreach ($rows as $row) {
+                $row->writeToBuffer($buffer);
+            }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function toSQL(): string
-    {
-        return \rawurlencode("$this->query Format RowBinary");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString(): string
-    {
-        return $this->query;
+            \fwrite($stream, $buffer->reset());
+            \fsync($stream);
+        } finally {
+            if (\is_string($file)) {
+                \fclose($stream);
+            }
+        }
     }
 }

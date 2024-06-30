@@ -58,12 +58,19 @@ final readonly class QueryBuilder implements ClickHouseQuerier
      */
     public function toSQL(): string
     {
-        /** @phpstan-var non-empty-string $query */
-        $query = vsprintf('INSERT INTO %s(%s)', [
+        return Query::string((string)$this)->toSQL();
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString(): string
+    {
+        /** @phpstan-var non-empty-string */
+        return vsprintf('INSERT INTO %s(%s)', [
             $this->table,
             implode(', ', $this->columns),
         ]);
-
-        return Query::string($query)->toSQL();
     }
 }

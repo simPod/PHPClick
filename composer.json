@@ -22,7 +22,8 @@
     "autoload": {
         "psr-4": {
             "Kafkiansky\\PHPClick\\": "src/"
-        }
+        },
+        "files": ["src/functions.php"]
     },
     "autoload-dev": {
         "psr-4": {

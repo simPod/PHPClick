@@ -38,4 +38,9 @@ interface ClickHouseQuerier
      * @return non-empty-string
      */
     public function toSQL(): string;
+
+    /**
+     * @return non-empty-string
+     */
+    public function __toString(): string;
 }
