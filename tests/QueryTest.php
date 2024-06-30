@@ -25,26 +25,27 @@
 
 declare(strict_types=1);
 
-namespace Kafkiansky\PHPClick\Exception;
+namespace Kafkiansky\PHPClick\Tests;
 
-/**
- * @api
- */
-final class QueryCannotBeExecuted extends \Exception
+use Kafkiansky\PHPClick\Query;
+use Kafkiansky\PHPClick\QueryBuilder;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+
+#[CoversClass(Query::class)]
+#[CoversClass(QueryBuilder::class)]
+final class QueryTest extends TestCase
 {
-    public function __construct(
-        public readonly string $clickHouseException,
-        public readonly string $clickHouseErrorCode,
-        public readonly string $query,
-        ?\Throwable $previous = null,
-    ) {
-        parent::__construct(
-            vsprintf('Query "%s" cannot be executed due to exception (%s): "%s".', [
-                $this->query,
-                $this->clickHouseErrorCode,
-                $this->clickHouseException,
-            ]),
-            previous: $previous,
+    public function testQueryString(): void
+    {
+        self::assertSame(\rawurlencode('INSERT INTO test.logs (LogName) Format RowBinary'), Query::string('INSERT INTO test.logs (LogName)')->toSQL());
+    }
+
+    public function testQueryBuilder(): void
+    {
+        self::assertSame(
+            \rawurlencode('INSERT INTO test.logs(LogName, LogTime, LogAttributes) Format RowBinary'),
+            Query::builder('test.logs')->columns('LogName', 'LogTime')->columns('LogAttributes')->toSQL(),
         );
     }
 }

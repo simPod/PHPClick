@@ -108,12 +108,12 @@ final readonly class Column
         return new Internal\Int64Column($value);
     }
 
-    public static function float32(int $value): ColumnValuer
+    public static function float32(float $value): ColumnValuer
     {
         return new Internal\Float32Column($value);
     }
 
-    public static function float64(int $value): ColumnValuer
+    public static function float64(float $value): ColumnValuer
     {
         return new Internal\Float64Column($value);
     }
