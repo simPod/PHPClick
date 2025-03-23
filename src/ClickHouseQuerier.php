@@ -29,8 +29,6 @@ namespace Kafkiansky\PHPClick;
 
 /**
  * @api
- *
- * @internal \Kafkiansky\PHPClick
  */
 interface ClickHouseQuerier
 {
