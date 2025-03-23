@@ -68,7 +68,7 @@ final readonly class Row
         $this->writeToBuffer($buffer);
 
         // We do not modify the buffer so that it will continue to be available if it is passed externally.
-        if (!\fwrite($stream, (string)$buffer)) {
+        if (!\fwrite($stream, $buffer->read(\count($buffer)))) {
             throw new Exception\StreamNotWriteable(stream_get_meta_data($stream)['uri']);
         }
     }

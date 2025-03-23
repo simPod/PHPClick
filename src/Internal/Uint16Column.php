@@ -31,7 +31,7 @@ use Kafkiansky\Binary\Buffer;
 use Kafkiansky\PHPClick\ColumnValuer;
 
 /**
- * @api
+ * @internal
  */
 final readonly class Uint16Column implements ColumnValuer
 {

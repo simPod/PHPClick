@@ -38,9 +38,9 @@ use Kafkiansky\Binary;
 function rowsToFile($file, Row ...$rows): void
 {
     if (\count($rows) > 0) {
-        $stream = \is_resource($file) ? $file : \fopen($file, 'a+');
+        $stream = \is_string($file) ? \fopen($file, 'a+') : $file;
         if (!\is_resource($stream)) {
-            throw new Exception\StreamNotWriteable(\is_resource($file) ? stream_get_meta_data($file)['uri'] : $file);
+            throw new Exception\StreamNotWriteable(\is_string($file) ? $file : stream_get_meta_data($file)['uri']);
         }
 
         try {
