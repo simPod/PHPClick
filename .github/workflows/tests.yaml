@@ -11,41 +11,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     strategy:
-      fail-fast: true
       matrix:
-        php: [8.2, 8.3]
-        stability: [prefer-lowest, prefer-stable]
-
-    name: Unit Tests (${{matrix.php}}, ${{ matrix.os }}, ${{ matrix.stability }})
-
+        php: ["8.2", "8.3"]
+        dependencies: ["locked", "lowest", "highest"]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3.3.0
-
-      - name: Cache dependencies
-        uses: actions/cache@v1
-        with:
-          path: ~/.composer/cache/files
-          key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extension-csv: mbstring, xdebug
-          coverage: xdebug
-
-      - name: Install Dependencies
-        uses: nick-invision/retry@v1
+          ini-file: development
+          tools: composer:v2
+      - uses: ramsey/composer-install@v3
         with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer update --${{ matrix.stability }} --ignore-platform-reqs --prefer-dist --no-interaction --no-progress
-
-      - name: Validate composer.json
-        run: composer validate
-
-      - name: Execute tests
-        run: vendor/bin/phpunit --testdox
+          composer-options: --optimize-autoloader
+          dependency-versions: ${{ matrix.dependencies }}
+      - run: vendor/bin/phpunit --testdox
